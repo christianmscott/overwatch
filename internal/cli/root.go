@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var cfgFile string
+
 var rootCmd = &cobra.Command{
 	Use:   "overwatch",
 	Short: "Monitoring tool for sites, services, jobs, and more",
@@ -19,6 +21,8 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default: overwatch.yaml)")
+
 	rootCmd.AddCommand(runCmd)
 	rootCmd.AddCommand(workerCmd)
 	rootCmd.AddCommand(statusCmd)

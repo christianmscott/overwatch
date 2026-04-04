@@ -1,11 +1,9 @@
 package spec
 
-import "time"
-
 type Config struct {
 	Checks []CheckSpec  `yaml:"checks"`
-	Alerts AlertsConfig `yaml:"alerts"`
-	Worker WorkerConfig `yaml:"worker"`
+	Alerts AlertsConfig `yaml:"alerts,omitempty"`
+	Worker WorkerConfig `yaml:"worker,omitempty"`
 }
 
 type AlertsConfig struct {
@@ -18,7 +16,7 @@ type WebhookConfig struct {
 	URL     string            `yaml:"url"`
 	Method  string            `yaml:"method,omitempty"`
 	Headers map[string]string `yaml:"headers,omitempty"`
-	Timeout time.Duration     `yaml:"timeout,omitempty"`
+	Timeout Duration          `yaml:"timeout,omitempty"`
 }
 
 type SMTPConfig struct {
@@ -32,8 +30,8 @@ type SMTPConfig struct {
 }
 
 type WorkerConfig struct {
-	Concurrency int           `yaml:"concurrency,omitempty"`
-	PollInterval time.Duration `yaml:"poll_interval,omitempty"`
-	APIEndpoint  string        `yaml:"api_endpoint,omitempty"`
-	APIToken     string        `yaml:"api_token,omitempty"`
+	Concurrency  int      `yaml:"concurrency,omitempty"`
+	PollInterval Duration `yaml:"poll_interval,omitempty"`
+	APIEndpoint  string   `yaml:"api_endpoint,omitempty"`
+	APIToken     string   `yaml:"api_token,omitempty"`
 }
