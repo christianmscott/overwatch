@@ -24,11 +24,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default: overwatch.yaml)")
 
 	rootCmd.AddCommand(runCmd)
-	rootCmd.AddCommand(workerCmd)
-	rootCmd.AddCommand(statusCmd)
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(checksCmd)
 	rootCmd.AddCommand(alertsCmd)
-	rootCmd.AddCommand(serviceCmd)
 	rootCmd.AddCommand(versionCmd)
 }
