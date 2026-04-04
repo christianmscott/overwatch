@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/christianmscott/overwatch/internal/alerts"
 	"github.com/christianmscott/overwatch/internal/scheduler"
 	"github.com/christianmscott/overwatch/internal/version"
 	"github.com/christianmscott/overwatch/internal/worker"
@@ -36,7 +37,14 @@ func (e *Engine) Run(ctx context.Context) error {
 	tick := 1 * time.Second
 	sched := scheduler.New(source, wi, tick, len(e.cfg.Checks)*2)
 
-	logResult := func(r spec.CheckResult) {
+	senders := alerts.BuildSenders(e.cfg.Alerts)
+	router := alerts.NewRouter(senders)
+
+	if len(senders) > 0 {
+		slog.Info("alerting enabled", "senders", len(senders))
+	}
+
+	handleResult := func(r spec.CheckResult) {
 		attrs := []any{
 			"check", r.CheckName,
 			"status", r.Status,
@@ -53,9 +61,11 @@ func (e *Engine) Run(ctx context.Context) error {
 		default:
 			slog.Error("check complete", attrs...)
 		}
+
+		router.Handle(r)
 	}
 
-	pool := worker.NewPool(e.cfg.Worker.Concurrency, source, logResult)
+	pool := worker.NewPool(e.cfg.Worker.Concurrency, source, handleResult)
 
 	slog.Info("starting overwatch",
 		"checks", len(e.cfg.Checks),
