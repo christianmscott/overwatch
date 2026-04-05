@@ -9,6 +9,9 @@ import (
 	"time"
 
 	"github.com/christianmscott/overwatch/internal/alerts"
+	"github.com/christianmscott/overwatch/internal/api"
+	"github.com/christianmscott/overwatch/internal/config"
+	"github.com/christianmscott/overwatch/internal/results"
 	"github.com/christianmscott/overwatch/internal/scheduler"
 	"github.com/christianmscott/overwatch/internal/version"
 	"github.com/christianmscott/overwatch/internal/worker"
@@ -16,16 +19,42 @@ import (
 )
 
 type Engine struct {
-	cfg *spec.Config
+	cfg     *spec.Config
+	cfgPath string
 }
 
-func NewEngine(cfg *spec.Config) *Engine {
-	return &Engine{cfg: cfg}
+func NewEngine(cfg *spec.Config, cfgPath string) *Engine {
+	return &Engine{cfg: cfg, cfgPath: cfgPath}
 }
 
 func (e *Engine) Run(ctx context.Context) error {
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
+
+	store := results.NewStore(100)
+	srv := api.New(e.cfg, e.cfgPath, store)
+
+	sighup := make(chan os.Signal, 1)
+	signal.Notify(sighup, syscall.SIGHUP)
+	go func() {
+		for range sighup {
+			slog.Info("SIGHUP received, reloading config", "path", e.cfgPath)
+			newCfg, err := config.Load(e.cfgPath)
+			if err != nil {
+				slog.Error("config reload failed", "error", err)
+				continue
+			}
+			e.cfg = newCfg
+			srv.UpdateConfig(newCfg)
+			slog.Info("config reloaded", "checks", len(newCfg.Checks))
+		}
+	}()
+
+	go func() {
+		if err := srv.Serve(ctx); err != nil {
+			slog.Error("api server error", "error", err)
+		}
+	}()
 
 	source := NewLocalJobSource(e.cfg.Checks)
 
@@ -35,7 +64,7 @@ func (e *Engine) Run(ctx context.Context) error {
 	}
 
 	tick := 1 * time.Second
-	sched := scheduler.New(source, wi, tick, len(e.cfg.Checks)*2)
+	sched := scheduler.New(source, wi, tick, len(e.cfg.Checks)*2+8)
 
 	senders := alerts.BuildSenders(e.cfg.Alerts)
 	router := alerts.NewRouter(senders)
@@ -45,6 +74,8 @@ func (e *Engine) Run(ctx context.Context) error {
 	}
 
 	handleResult := func(r spec.CheckResult) {
+		store.Record(r)
+
 		attrs := []any{
 			"check", r.CheckName,
 			"status", r.Status,
@@ -65,11 +96,12 @@ func (e *Engine) Run(ctx context.Context) error {
 		router.Handle(r)
 	}
 
-	pool := worker.NewPool(e.cfg.Worker.Concurrency, source, handleResult)
+	pool := worker.NewPool(e.cfg.Server.Concurrency, source, handleResult)
 
 	slog.Info("starting overwatch",
 		"checks", len(e.cfg.Checks),
-		"concurrency", e.cfg.Worker.Concurrency,
+		"concurrency", e.cfg.Server.Concurrency,
+		"api", srv.Addr(),
 		"version", version.Version,
 	)
 

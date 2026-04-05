@@ -1,9 +1,16 @@
 package spec
 
 type Config struct {
+	Server ServerConfig `yaml:"server,omitempty"`
 	Checks []CheckSpec  `yaml:"checks"`
 	Alerts AlertsConfig `yaml:"alerts,omitempty"`
 	Worker WorkerConfig `yaml:"worker,omitempty"`
+}
+
+type ServerConfig struct {
+	BindAddress string `yaml:"bind_address,omitempty"`
+	BindPort    int    `yaml:"bind_port,omitempty"`
+	Concurrency int    `yaml:"concurrency,omitempty"`
 }
 
 type AlertsConfig struct {

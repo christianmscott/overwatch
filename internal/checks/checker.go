@@ -48,4 +48,5 @@ func init() {
 	Register(spec.CheckTCP, &TCPChecker{})
 	Register(spec.CheckTLS, &TLSChecker{})
 	Register(spec.CheckDNS, &DNSChecker{})
+	Register(spec.CheckCheckIn, DefaultCheckIn)
 }

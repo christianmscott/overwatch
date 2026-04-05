@@ -35,14 +35,18 @@ func Validate(cfg *spec.Config) []string {
 			seen[c.Name] = true
 		}
 
-		if c.Target == "" {
+		if c.Target == "" && c.Type != spec.CheckCheckIn {
 			errs = append(errs, prefix+": target is required")
 		}
 
 		switch c.Type {
-		case spec.CheckHTTP, spec.CheckTCP, spec.CheckTLS, spec.CheckDNS:
+		case spec.CheckHTTP, spec.CheckTCP, spec.CheckTLS, spec.CheckDNS, spec.CheckCheckIn:
 		default:
-			errs = append(errs, fmt.Sprintf("%s: unknown type %q (want http, tcp, tls, dns)", prefix, c.Type))
+			errs = append(errs, fmt.Sprintf("%s: unknown type %q (want http, tcp, tls, dns, checkin)", prefix, c.Type))
+		}
+
+		if c.Type == spec.CheckCheckIn && c.MaxSilence.Duration == 0 {
+			errs = append(errs, prefix+": max_silence is required for checkin checks")
 		}
 
 		if c.Type == spec.CheckHTTP && c.Target != "" {

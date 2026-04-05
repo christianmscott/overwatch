@@ -3,6 +3,11 @@ package config
 const StarterConfig = `# Overwatch configuration
 # See: https://github.com/christianmscott/overwatch
 
+server:
+  bind_address: 127.0.0.1
+  bind_port: 3030
+  concurrency: 4
+
 checks:
   - name: example-http
     type: http
@@ -29,6 +34,12 @@ checks:
   #   interval: 5m
   #   timeout: 5s
 
+  # - name: nightly-backup
+  #   type: checkin
+  #   max_silence: 25h
+  #   interval: 1m
+  #   timeout: 5s
+
 alerts:
   webhooks: []
   # - name: slack
@@ -45,7 +56,4 @@ alerts:
   #   from: overwatch@example.com
   #   recipients:
   #     - oncall@example.com
-
-worker:
-  concurrency: 4
 `

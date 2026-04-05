@@ -11,6 +11,14 @@ import (
 
 const DefaultPath = "overwatch.yaml"
 
+func Save(path string, cfg *spec.Config) error {
+	data, err := yaml.Marshal(cfg)
+	if err != nil {
+		return fmt.Errorf("marshalling config: %w", err)
+	}
+	return os.WriteFile(path, data, 0644)
+}
+
 func Load(path string) (*spec.Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -32,6 +40,15 @@ func Load(path string) (*spec.Config, error) {
 }
 
 func applyDefaults(cfg *spec.Config) {
+	if cfg.Server.BindAddress == "" {
+		cfg.Server.BindAddress = "127.0.0.1"
+	}
+	if cfg.Server.BindPort == 0 {
+		cfg.Server.BindPort = 3030
+	}
+	if cfg.Server.Concurrency == 0 {
+		cfg.Server.Concurrency = 4
+	}
 	for i := range cfg.Checks {
 		if cfg.Checks[i].Timeout.Duration == 0 {
 			cfg.Checks[i].Timeout = spec.Duration{Duration: 10 * time.Second}
@@ -41,6 +58,9 @@ func applyDefaults(cfg *spec.Config) {
 		}
 		if cfg.Checks[i].Type == spec.CheckHTTP && cfg.Checks[i].ExpectedStatus == 0 {
 			cfg.Checks[i].ExpectedStatus = 200
+		}
+		if cfg.Checks[i].Type == spec.CheckCheckIn && cfg.Checks[i].MaxSilence.Duration == 0 {
+			cfg.Checks[i].MaxSilence = spec.Duration{Duration: 5 * time.Minute}
 		}
 	}
 	for i := range cfg.Alerts.Webhooks {
