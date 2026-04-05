@@ -12,8 +12,10 @@ import (
 )
 
 var (
-	bindAddress string
-	bindPort    int
+	bindAddress     string
+	bindPort        int
+	externalAddress string
+	concurrency     int
 )
 
 var serveCmd = &cobra.Command{
@@ -46,6 +48,12 @@ var serveCmd = &cobra.Command{
 		if cmd.Flags().Changed("bind-port") {
 			cfg.Server.BindPort = bindPort
 		}
+		if cmd.Flags().Changed("external-address") {
+			cfg.Server.ExternalAddress = externalAddress
+		}
+		if cmd.Flags().Changed("concurrency") {
+			cfg.Server.Concurrency = concurrency
+		}
 
 		if cfg.Server.JoinToken == "" {
 			token, err := auth.GenerateJoinToken(cfg.Server.TokenAddress())
@@ -68,4 +76,6 @@ var serveCmd = &cobra.Command{
 func init() {
 	serveCmd.Flags().StringVar(&bindAddress, "bind-address", "127.0.0.1", "address to bind the API server")
 	serveCmd.Flags().IntVar(&bindPort, "bind-port", 3030, "port to bind the API server")
+	serveCmd.Flags().StringVar(&externalAddress, "external-address", "", "public hostname or IP clients use to reach this server (used in join token)")
+	serveCmd.Flags().IntVar(&concurrency, "concurrency", 4, "max number of checks to run in parallel")
 }

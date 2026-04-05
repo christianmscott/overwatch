@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/christianmscott/overwatch/internal/tui"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +18,8 @@ var rootCmd = &cobra.Command{
 			fmt.Println("No configuration found. Run 'overwatch init' to get started.")
 			return nil
 		}
-		return tui.Run()
+		fmt.Println("Use 'overwatch status' to view checks and alerts, or 'overwatch --help' for all commands.")
+		return nil
 	},
 }
 
@@ -38,6 +38,7 @@ func init() {
 	rootCmd.AddCommand(checkCmd)
 	rootCmd.AddCommand(alertCmd)
 	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(tokenCmd)
 	rootCmd.AddCommand(workerCmd)
 	rootCmd.AddCommand(versionCmd)
 }

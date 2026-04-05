@@ -4,7 +4,7 @@ Thanks for your interest. This document is for anyone opening issues or pull req
 
 ## What belongs here
 
-Overwatch is: the CLI, TUI, self-hosted server, check execution, and alerting. Changes should fit that scope—small, explicit code paths; respect for operators running the binary without a browser for self-hosted use; clear errors and sensible defaults.
+Overwatch is: the CLI, self-hosted server, check execution, and alerting. Changes should fit that scope—small, explicit code paths; respect for operators running the binary without a browser for self-hosted use; clear errors and sensible defaults.
 
 If you are unsure whether an idea fits, open an issue first and describe the use case.
 

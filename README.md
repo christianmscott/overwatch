@@ -1,25 +1,8 @@
 # Overwatch
 
-**Infrastructure monitoring** with a terminal-first workflow: know when services, endpoints, certificates, and scheduled jobs fail—without living in a browser.
+**Infrastructure monitoring** from the command line: know when services, endpoints, certificates, and scheduled jobs fail—without living in a browser.
 
-Overwatch ships as a **single Go binary**. **Self-hosted:** you run `overwatch serve` and own the YAML config on your machines. **Overwatch Cloud:** the same TUI and CLI connect to a hosted account so checks and alerts run without you operating the server.
-
----
-
-## Features
-
-| Capability | Description |
-|------------|-------------|
-| **Terminal UI** | Run `overwatch` for a live dashboard; first-time setup chooses self-hosted or cloud and stores client config under `~/.overwatch` (or the OS user profile equivalent). |
-| **Automation CLI** | `overwatch check` and `overwatch alert` (`add`, `list`, `remove`, `update`) plus `overwatch status` for verbose, tabular config—ideal for scripts and automation. |
-| **Self-hosted server** | `overwatch serve` runs the API and scheduler; bind address/port are first-class flags. Monitor definitions live in **YAML** as the **source of truth** (edits via TUI/CLI or on disk; reload via signal and on restart). |
-| **Check types** | HTTP/HTTPS, TCP, TLS certificate expiry, DNS, and **scheduled-job check-in** (HTTP webhook your jobs `curl` on success, with “missed check-in” windows and optional failure signaling). |
-| **Alerts** | Outbound **webhooks** and **SMTP** (your relay). |
-| **Config** | `overwatch config init`, `overwatch config validate`, and `overwatch version`. |
-
-Service supervision (systemd, Windows Service, Docker, etc.) is up to you—the binary does not install itself as a service.
-
-See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for how to contribute.
+Overwatch ships as a **single Go binary**. Run `overwatch serve` to start a self-hosted monitoring server with checks and alerts defined in YAML. Use the CLI to manage everything.
 
 ---
 
@@ -37,36 +20,160 @@ cd overwatch
 go build -o overwatch ./cmd/overwatch
 ```
 
-Releases and Homebrew are intended as the project matures; see GitHub **Releases** when available.
+---
+
+## Quick start
+
+### 1. Start the server
+
+```bash
+overwatch serve
+```
+
+This creates a starter `overwatch.yaml` if one doesn't exist, generates a **join token**, and starts the API + scheduler on `127.0.0.1:3030`.
+
+Use flags to customize:
+
+```bash
+overwatch serve --bind-address 0.0.0.0 --bind-port 3030
+```
+
+The join token is printed to stderr on startup — copy it for the next step.
+
+### With Docker Compose
+
+```yaml
+services:
+  overwatch:
+    build:
+      context: .
+      dockerfile: packaging/docker/Dockerfile
+    ports:
+      - "3030:3030"
+    volumes:
+      - ./overwatch.yaml:/overwatch.yaml
+    command: ["--bind-address", "0.0.0.0"]
+```
+
+```bash
+docker compose up -d
+```
+
+### 2. Connect a client
+
+On any machine that should manage this server:
+
+```bash
+overwatch init
+```
+
+Select **option 2** ("Setup a client"), paste the join token from the server. This generates a keypair under `~/.overwatch/`, registers it with the server, and saves the connection config.
+
+### 3. Use the CLI
+
+```bash
+overwatch status                # full status: checks, alerts, results
+overwatch check list            # list checks
+overwatch check add my-api \
+  --type http \
+  --target https://api.example.com \
+  --interval 30s
+overwatch alert add slack \
+  --url https://hooks.slack.com/services/T.../B.../xxx
+overwatch token                 # print the join token (to share with colleagues)
+```
 
 ---
 
-## Quick start (self-hosted)
+## Features
 
-1. Start the server (creates starter config if missing):
+| Capability | Description |
+|------------|-------------|
+| **CLI** | `overwatch check` and `overwatch alert` (`add`, `list`, `remove`, `update`, `test`) plus `overwatch status` for verbose, tabular config—ideal for scripts and automation. |
+| **Self-hosted server** | `overwatch serve` runs the API and scheduler. Monitor definitions live in **YAML** as the **source of truth** (edits via CLI or on disk; reload via SIGHUP or `POST /api/reload`). |
+| **Check types** | HTTP/HTTPS, TCP, TLS certificate expiry, DNS, and **scheduled-job check-in** (webhook endpoint your jobs `curl` on success, with missed-window alerting and optional failure signaling). |
+| **Alerts** | Outbound **webhooks** (Slack, Teams, PagerDuty, etc.) and **SMTP** (your relay). |
+| **Auth** | Ed25519 client signatures. Clients join with a token; all subsequent requests are signed. |
+| **Config** | `overwatch config init`, `overwatch config validate`, and `overwatch version`. |
 
-   ```bash
-   overwatch serve --bind-address 127.0.0.1 --bind-port 8080
-   ```
+---
 
-2. In another terminal, launch the TUI or use the CLI:
+## Commands
 
-   ```bash
-   overwatch                 # TUI
-   overwatch status          # full config snapshot
-   overwatch check list
-   ```
+```text
+overwatch                         # show help / setup prompt
+overwatch init                    # interactive setup (server, client, or cloud)
+overwatch serve                   # start the self-hosted server
+overwatch status                  # verbose table of all checks & alerts + live results
+overwatch check list|add|remove|update|test
+overwatch alert list|add|remove|update|test
+overwatch token                   # print the server's join token (authenticated)
+overwatch config init             # generate a starter YAML config
+overwatch config validate         # validate the config file
+overwatch version                 # build/version metadata
+```
 
-Exact flags and defaults may evolve; use `overwatch --help` and `overwatch serve --help` for the current interface.
+Use `--help` on any command for flags and examples.
+
+---
+
+## Server configuration (YAML)
+
+The YAML config file is the source of truth for the server. Example:
+
+```yaml
+server:
+  bind_address: 127.0.0.1
+  bind_port: 3030
+  external_address: overwatch.example.com
+  concurrency: 4
+
+checks:
+  - name: my-api
+    type: http
+    target: https://api.example.com
+    interval: 30s
+    timeout: 10s
+    expected_status: 200
+    alerts: [slack]
+
+  - name: db
+    type: tcp
+    target: localhost:5432
+    interval: 30s
+    timeout: 5s
+
+  - name: cert
+    type: tls
+    target: example.com:443
+    interval: 1h
+    timeout: 10s
+
+  - name: nightly-backup
+    type: checkin
+    max_silence: 25h
+    interval: 1m
+    timeout: 5s
+
+alerts:
+  webhooks:
+    - name: slack
+      url: https://hooks.slack.com/services/...
+      method: POST
+      timeout: 10s
+```
+
+Edit the file and send SIGHUP or `POST /api/reload` to reload without restarting.
 
 ---
 
 ## Repository layout
 
-- `cmd/overwatch` — main entrypoint  
-- `internal/` — implementation (CLI, TUI, server, checks, alerts, …)  
-- `pkg/spec` — shared config and API types where stable  
-- `packaging/` — examples (systemd, Docker, …)  
+- `cmd/overwatch` — main entrypoint
+- `internal/` — implementation (CLI, server, checks, alerts, auth, …)
+- `pkg/spec` — shared config and API types
+- `packaging/` — Docker, systemd, launchd assets
+- `examples/` — example configs
 
 ---
 

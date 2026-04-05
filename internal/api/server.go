@@ -48,6 +48,7 @@ func New(cfg *spec.Config, cfgPath string, store *results.Store) *Server {
 	mux.HandleFunc("PUT /api/alerts/{name}", s.handleUpdateAlert)
 	mux.HandleFunc("DELETE /api/alerts/{name}", s.handleRemoveAlert)
 	mux.HandleFunc("POST /api/checkin/{name}", s.handleCheckIn)
+	mux.HandleFunc("GET /api/token", s.handleGetToken)
 	mux.HandleFunc("POST /api/reload", s.handleReload)
 
 	addr := net.JoinHostPort(cfg.Server.BindAddress, fmt.Sprintf("%d", cfg.Server.BindPort))
@@ -180,6 +181,18 @@ func (s *Server) handleJoin(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+}
+
+func (s *Server) handleGetToken(w http.ResponseWriter, _ *http.Request) {
+	s.mu.RLock()
+	token := s.cfg.Server.JoinToken
+	s.mu.RUnlock()
+
+	if token == "" {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "no join token configured"})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"join_token": token})
 }
 
 func (s *Server) handleStatus(w http.ResponseWriter, _ *http.Request) {

@@ -33,8 +33,8 @@ func runInit(cmd *cobra.Command, args []string) error {
 	fmt.Println()
 	fmt.Println("How would you like to set up?")
 	fmt.Println("  1. Setup a server     - run a self-hosted monitoring server")
-	fmt.Println("  2. Connect to Cloud   - use Overwatch Cloud (coming soon)")
-	fmt.Println("  3. Setup a client     - connect to an existing server")
+	fmt.Println("  2. Setup a client     - connect to an existing server")
+	fmt.Println("  3. Connect to Cloud   - use Overwatch Cloud (coming soon)")
 	fmt.Println()
 	fmt.Print("Select [1-3]: ")
 
@@ -45,9 +45,9 @@ func runInit(cmd *cobra.Command, args []string) error {
 	case "1":
 		return initServer()
 	case "2":
-		return initCloud()
-	case "3":
 		return initClient(reader)
+	case "3":
+		return initCloud()
 	default:
 		return fmt.Errorf("invalid choice: %s", choice)
 	}
