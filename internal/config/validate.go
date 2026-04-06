@@ -19,10 +19,6 @@ func (e *ValidationError) Error() string {
 func Validate(cfg *spec.Config) []string {
 	var errs []string
 
-	if len(cfg.Checks) == 0 {
-		errs = append(errs, "at least one check is required")
-	}
-
 	seen := make(map[string]bool)
 	for i, c := range cfg.Checks {
 		prefix := fmt.Sprintf("checks[%d]", i)

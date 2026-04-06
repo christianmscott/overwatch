@@ -8,6 +8,41 @@ Overwatch ships as a **single Go binary**. Run `overwatch serve` to start a self
 
 ## Install
 
+### macOS (Homebrew)
+
+```bash
+brew install processfoundry/tap/overwatch
+```
+
+### Linux
+
+```bash
+curl -sLO "https://github.com/processfoundry/overwatch/releases/latest/download/overwatch_linux_amd64.tar.gz"
+tar xzf overwatch_linux_amd64.tar.gz
+sudo mv overwatch /usr/local/bin/
+```
+
+For ARM64:
+
+```bash
+curl -sLO "https://github.com/processfoundry/overwatch/releases/latest/download/overwatch_linux_arm64.tar.gz"
+tar xzf overwatch_linux_arm64.tar.gz
+sudo mv overwatch /usr/local/bin/
+```
+
+### Windows
+
+```powershell
+Invoke-WebRequest "https://github.com/processfoundry/overwatch/releases/latest/download/overwatch_windows_amd64.tar.gz" -OutFile overwatch.tar.gz
+tar xzf overwatch.tar.gz
+New-Item -ItemType Directory -Force -Path "C:\overwatch" | Out-Null
+Move-Item overwatch.exe "C:\overwatch\overwatch.exe" -Force
+# Add C:\overwatch to your PATH if not already present:
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\overwatch", "User")
+```
+
+### From source
+
 ```bash
 go install github.com/christianmscott/overwatch/cmd/overwatch@latest
 ```
@@ -57,6 +92,56 @@ services:
 
 ```bash
 docker compose up -d
+```
+
+### With systemd (Linux)
+
+Copy the provided unit file and config:
+
+```bash
+sudo cp packaging/systemd/overwatch.service /etc/systemd/system/
+sudo mkdir -p /etc/overwatch
+sudo cp overwatch.yaml /etc/overwatch/overwatch.yaml
+```
+
+Enable and start:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now overwatch
+sudo journalctl -u overwatch -f   # follow logs
+```
+
+Reload config without restarting:
+
+```bash
+sudo systemctl reload overwatch
+```
+
+### Run as a Windows service
+
+The simplest approach is [NSSM](https://nssm.cc/) (the Non-Sucking Service Manager). Download `nssm.exe` and place it somewhere on your PATH, then:
+
+```powershell
+# Install the service (adjust paths as needed)
+nssm install Overwatch "C:\overwatch\overwatch.exe" "serve --bind-address 0.0.0.0 --config C:\overwatch\overwatch.yaml"
+nssm set Overwatch AppDirectory "C:\overwatch"
+nssm set Overwatch DisplayName "Overwatch Monitoring Server"
+nssm set Overwatch Start SERVICE_AUTO_START
+nssm set Overwatch AppStdout "C:\overwatch\overwatch.log"
+nssm set Overwatch AppStderr "C:\overwatch\overwatch.log"
+
+# Start the service
+nssm start Overwatch
+```
+
+Manage with standard Windows service commands:
+
+```powershell
+nssm status Overwatch    # check status
+nssm restart Overwatch   # restart (reloads config)
+nssm stop Overwatch      # stop
+nssm remove Overwatch    # uninstall
 ```
 
 ### 2. Connect a client

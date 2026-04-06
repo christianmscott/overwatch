@@ -59,28 +59,18 @@ func initServer() error {
 		return fmt.Errorf("%s already exists; remove it first or choose a different path with --config", path)
 	}
 
-	cfg := &spec.Config{}
-	if err := yaml.Unmarshal([]byte(config.StarterConfig), cfg); err != nil {
-		return fmt.Errorf("parsing starter config: %w", err)
-	}
-
-	joinToken, err := auth.GenerateJoinToken(cfg.Server.TokenAddress())
-	if err != nil {
-		return err
-	}
-	cfg.Server.JoinToken = joinToken
-
-	data, err := yaml.Marshal(cfg)
-	if err != nil {
-		return fmt.Errorf("marshalling config: %w", err)
-	}
-	if err := os.WriteFile(path, data, 0644); err != nil {
+	if err := config.WriteStarterWithJoinToken(path); err != nil {
 		return fmt.Errorf("writing config: %w", err)
+	}
+
+	cfg, err := config.Load(path)
+	if err != nil {
+		return fmt.Errorf("loading config: %w", err)
 	}
 
 	fmt.Printf("\nWrote server config to %s\n", path)
 	fmt.Println()
-	fmt.Println("==> Join token:", joinToken)
+	fmt.Println("==> Join token:", cfg.Server.JoinToken)
 	fmt.Println("==> Share this token with clients to connect to this server.")
 	fmt.Println()
 	fmt.Println("Start the server with: overwatch serve")
@@ -122,7 +112,7 @@ func initClient(reader *bufio.Reader) error {
 		return err
 	}
 
-	serverURL := fmt.Sprintf("http://%s", addr)
+	serverURL := addr
 	if err := sendJoinRequest(serverURL, token, pub); err != nil {
 		return fmt.Errorf("join failed: %w", err)
 	}

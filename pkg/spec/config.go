@@ -13,21 +13,32 @@ type ServerConfig struct {
 	BindAddress     string           `yaml:"bind_address,omitempty"`
 	BindPort        int              `yaml:"bind_port,omitempty"`
 	ExternalAddress string           `yaml:"external_address,omitempty"`
+	ExternalPort    int              `yaml:"external_port,omitempty"`
 	Concurrency     int              `yaml:"concurrency,omitempty"`
 	JoinToken       string           `yaml:"join_token,omitempty"`
 	AuthorizedUsers []PublicKeyEntry `yaml:"authorized_users,omitempty"`
 }
 
-func (s ServerConfig) TokenAddress() string {
+func (s ServerConfig) ExternalURL() string {
 	host := s.BindAddress
 	if s.ExternalAddress != "" {
 		host = s.ExternalAddress
 	}
 	port := s.BindPort
+	if s.ExternalPort != 0 {
+		port = s.ExternalPort
+	}
 	if port == 0 {
 		port = 3030
 	}
-	return fmt.Sprintf("%s:%d", host, port)
+	switch port {
+	case 443:
+		return fmt.Sprintf("https://%s", host)
+	case 80:
+		return fmt.Sprintf("http://%s", host)
+	default:
+		return fmt.Sprintf("http://%s:%d", host, port)
+	}
 }
 
 type PublicKeyEntry struct {

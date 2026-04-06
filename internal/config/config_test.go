@@ -11,7 +11,19 @@ import (
 func TestLoadValid(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "overwatch.yaml")
-	if err := os.WriteFile(path, []byte(StarterConfig), 0644); err != nil {
+	content := `server:
+  bind_address: 127.0.0.1
+  bind_port: 3030
+checks:
+  - name: test-http
+    type: http
+    target: https://example.com
+    interval: 60s
+    timeout: 10s
+alerts:
+  webhooks: []
+`
+	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -22,14 +34,26 @@ func TestLoadValid(t *testing.T) {
 	if len(cfg.Checks) != 1 {
 		t.Fatalf("expected 1 check, got %d", len(cfg.Checks))
 	}
-	if cfg.Checks[0].Name != "example-http" {
-		t.Errorf("expected check name example-http, got %s", cfg.Checks[0].Name)
+	if cfg.Checks[0].Name != "test-http" {
+		t.Errorf("expected check name test-http, got %s", cfg.Checks[0].Name)
 	}
 	if cfg.Checks[0].Type != spec.CheckHTTP {
 		t.Errorf("expected check type http, got %s", cfg.Checks[0].Type)
 	}
-	if cfg.Worker.Concurrency != 4 {
-		t.Errorf("expected concurrency 4, got %d", cfg.Worker.Concurrency)
+}
+
+func TestLoadStarterConfig(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "overwatch.yaml")
+	if err := os.WriteFile(path, []byte(StarterConfig), 0644); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := Load(path)
+	if err != nil {
+		t.Fatalf("starter config should load without error: %v", err)
+	}
+	if len(cfg.Checks) != 0 {
+		t.Fatalf("starter config should have 0 active checks, got %d", len(cfg.Checks))
 	}
 }
 
@@ -54,8 +78,13 @@ func TestLoadInvalidYAML(t *testing.T) {
 
 func TestLoadValidationErrors(t *testing.T) {
 	dir := t.TempDir()
-	path := filepath.Join(dir, "empty.yaml")
-	if err := os.WriteFile(path, []byte("checks: []\n"), 0644); err != nil {
+	path := filepath.Join(dir, "bad.yaml")
+	content := `checks:
+  - name: ""
+    type: bogus
+    target: ""
+`
+	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
 		t.Fatal(err)
 	}
 	_, err := Load(path)

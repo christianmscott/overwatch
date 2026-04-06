@@ -85,7 +85,7 @@ Examples:
   overwatch check add db --type tcp --target localhost:5432 --timeout 5s
   overwatch check add cert --type tls --target example.com:443 --interval 1h
   overwatch check add ns --type dns --target example.com --interval 5m
-  overwatch check add nightly-job --type checkin --max-silence 25h --interval 1m`,
+  overwatch check add nightly-job --type checkin --max-silence 25h`,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		addr, err := serverAddr()
@@ -127,6 +127,16 @@ Examples:
 			return apiReadError(resp)
 		}
 		fmt.Printf("added check %q\n", args[0])
+
+		if c.Type == spec.CheckCheckIn {
+			var result struct {
+				WebhookURL string `json:"webhook_url"`
+			}
+			if err := json.NewDecoder(resp.Body).Decode(&result); err == nil && result.WebhookURL != "" {
+				printCheckinHelp(result.WebhookURL)
+			}
+		}
+
 		return nil
 	},
 }
@@ -261,10 +271,23 @@ from the config file and runs it locally (does not require a running server).`,
 	},
 }
 
+func printCheckinHelp(url string) {
+	fmt.Printf("\nWebhook URL: %s\n", url)
+	fmt.Printf("\nYour scheduled job should POST to this URL on success.\n")
+	fmt.Printf("To report failure, append ?status=fail\n")
+	fmt.Printf("\nExamples:\n")
+	fmt.Printf("  # Linux / macOS\n")
+	fmt.Printf("  curl -X POST %s\n", url)
+	fmt.Printf("\n  # Windows (PowerShell)\n")
+	fmt.Printf("  Invoke-RestMethod -Method Post -Uri %s\n", url)
+	fmt.Printf("\n  # Report failure\n")
+	fmt.Printf("  curl -X POST '%s?status=fail'\n", url)
+}
+
 func init() {
 	checkAddCmd.Flags().StringVar(&checkAddType, "type", "http", "check type: http, tcp, tls, dns, checkin")
 	checkAddCmd.Flags().StringVar(&checkAddTarget, "target", "", "target (URL, host:port, or hostname depending on type)")
-	checkAddCmd.Flags().StringVar(&checkAddInterval, "interval", "60s", "how often to run (e.g. 30s, 5m, 1h)")
+	checkAddCmd.Flags().StringVar(&checkAddInterval, "interval", "60s", "how often to run the check (for checkin: how often to verify the job has reported in)")
 	checkAddCmd.Flags().StringVar(&checkAddTimeout, "timeout", "10s", "max time per check (e.g. 5s, 30s)")
 	checkAddCmd.Flags().StringSliceVar(&checkAddAlerts, "alerts", nil, "alert names to notify on failure (comma-separated)")
 	checkAddCmd.Flags().IntVar(&checkAddExpected, "expected-status", 0, "expected HTTP status code (http type only)")

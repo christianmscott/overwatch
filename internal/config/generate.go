@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/christianmscott/overwatch/internal/auth"
 	"github.com/christianmscott/overwatch/pkg/spec"
@@ -15,35 +16,32 @@ func WriteStarterWithJoinToken(path string) error {
 		return fmt.Errorf("parsing starter config: %w", err)
 	}
 
-	token, err := auth.GenerateJoinToken(cfg.Server.TokenAddress())
+	token, err := auth.GenerateJoinToken(cfg.Server.ExternalURL())
 	if err != nil {
 		return err
 	}
-	cfg.Server.JoinToken = token
 
-	data, err := yaml.Marshal(&cfg)
-	if err != nil {
-		return fmt.Errorf("marshalling config: %w", err)
-	}
-	return os.WriteFile(path, data, 0644)
+	content := strings.Replace(StarterConfig, "  concurrency: 4", "  join_token: "+token+"\n  concurrency: 4", 1)
+	return os.WriteFile(path, []byte(content), 0644)
 }
 
 const StarterConfig = `# Overwatch configuration
 # See: https://github.com/christianmscott/overwatch
 
 server:
-  bind_address: 127.0.0.1
-  bind_port: 3030
-  # external_address: overwatch.example.com  # hostname or IP clients use to reach this server
-  concurrency: 4
+  bind_address: 127.0.0.1   # local address binding
+  bind_port: 3030           # local port binding
+  external_address:         # hostname or IP clients use to reach this server 
+  external_port:            # public-facing port (e.g. 443 behind TLS proxy)
+  concurrency: 4            # max healthchecks to run at once (others deferred by 1s)
 
 checks:
-  - name: example-http
-    type: http
-    target: https://example.com
-    interval: 60s
-    timeout: 10s
-    expected_status: 200
+  # - name: example-http
+  #   type: http
+  #   target: https://example.com
+  #   interval: 60s
+  #   timeout: 10s
+  #   expected_status: 200
 
   # - name: example-tcp
   #   type: tcp
@@ -78,7 +76,7 @@ alerts:
 
   # smtp:
   #   host: smtp.example.com
-  #   port: 587
+  #   port: 587               # use 465 for implicit tls smtp servers (SMTPS)
   #   tls: true
   #   username: user
   #   password: pass

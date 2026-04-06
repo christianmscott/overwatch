@@ -15,6 +15,7 @@ var (
 	bindAddress     string
 	bindPort        int
 	externalAddress string
+	externalPort    int
 	concurrency     int
 )
 
@@ -51,12 +52,21 @@ var serveCmd = &cobra.Command{
 		if cmd.Flags().Changed("external-address") {
 			cfg.Server.ExternalAddress = externalAddress
 		}
+		if cmd.Flags().Changed("external-port") {
+			cfg.Server.ExternalPort = externalPort
+		}
 		if cmd.Flags().Changed("concurrency") {
 			cfg.Server.Concurrency = concurrency
 		}
 
-		if cfg.Server.JoinToken == "" {
-			token, err := auth.GenerateJoinToken(cfg.Server.TokenAddress())
+		needNewToken := cfg.Server.JoinToken == ""
+		if !needNewToken {
+			if addr, _, err := auth.ParseJoinToken(cfg.Server.JoinToken); err != nil || addr != cfg.Server.ExternalURL() {
+				needNewToken = true
+			}
+		}
+		if needNewToken {
+			token, err := auth.GenerateJoinToken(cfg.Server.ExternalURL())
 			if err != nil {
 				return err
 			}
@@ -76,6 +86,7 @@ var serveCmd = &cobra.Command{
 func init() {
 	serveCmd.Flags().StringVar(&bindAddress, "bind-address", "127.0.0.1", "address to bind the API server")
 	serveCmd.Flags().IntVar(&bindPort, "bind-port", 3030, "port to bind the API server")
-	serveCmd.Flags().StringVar(&externalAddress, "external-address", "", "public hostname or IP clients use to reach this server (used in join token)")
+	serveCmd.Flags().StringVar(&externalAddress, "external-address", "", "public hostname or IP clients use to reach this server")
+	serveCmd.Flags().IntVar(&externalPort, "external-port", 0, "public port (e.g. 443 behind TLS proxy); omitted from URLs when 80 or 443")
 	serveCmd.Flags().IntVar(&concurrency, "concurrency", 4, "max number of checks to run in parallel")
 }

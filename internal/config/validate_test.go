@@ -32,11 +32,8 @@ func TestValidateValid(t *testing.T) {
 func TestValidateNoChecks(t *testing.T) {
 	cfg := &spec.Config{}
 	errs := Validate(cfg)
-	if len(errs) == 0 {
-		t.Fatal("expected error for no checks")
-	}
-	if !containsStr(errs, "at least one check") {
-		t.Errorf("expected 'at least one check' error, got %v", errs)
+	if len(errs) != 0 {
+		t.Fatalf("empty config should be valid, got errors: %v", errs)
 	}
 }
 

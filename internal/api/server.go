@@ -247,6 +247,13 @@ func (s *Server) handleAddCheck(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
+	if c.Type == spec.CheckCheckIn {
+		writeJSON(w, http.StatusCreated, map[string]any{
+			"check":       c,
+			"webhook_url": s.cfg.Server.ExternalURL() + "/api/checkin/" + c.Name,
+		})
+		return
+	}
 	writeJSON(w, http.StatusCreated, c)
 }
 
