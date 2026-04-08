@@ -3,6 +3,7 @@ package checks
 import (
 	"context"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/christianmscott/overwatch/pkg/spec"
@@ -33,5 +34,6 @@ func (d *DNSChecker) Check(ctx context.Context, check spec.CheckSpec) spec.Check
 	}
 
 	result.Status = spec.StatusUp
+	result.Detail = map[string]any{"resolved": strings.Join(addrs, ", ")}
 	return result
 }

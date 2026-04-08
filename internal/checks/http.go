@@ -43,6 +43,14 @@ func (h *HTTPChecker) Check(ctx context.Context, check spec.CheckSpec) spec.Chec
 		expected = 200
 	}
 
+	result.Detail = map[string]any{
+		"statusCode":    resp.StatusCode,
+		"statusText":    resp.Status,
+		"contentType":   resp.Header.Get("Content-Type"),
+		"contentLength": resp.ContentLength,
+		"server":        resp.Header.Get("Server"),
+	}
+
 	if resp.StatusCode == expected {
 		result.Status = spec.StatusUp
 	} else {

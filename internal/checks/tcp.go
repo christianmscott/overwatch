@@ -28,5 +28,6 @@ func (t *TCPChecker) Check(ctx context.Context, check spec.CheckSpec) spec.Check
 	conn.Close()
 
 	result.Status = spec.StatusUp
+	result.Detail = map[string]any{"target": check.Target}
 	return result
 }

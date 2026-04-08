@@ -48,6 +48,13 @@ func (t *TLSChecker) Check(ctx context.Context, check spec.CheckSpec) spec.Check
 	leaf := certs[0]
 	until := time.Until(leaf.NotAfter)
 
+	result.Detail = map[string]any{
+		"subject":       leaf.Subject.CommonName,
+		"issuer":        leaf.Issuer.CommonName,
+		"expiresAt":     leaf.NotAfter.Format("2006-01-02"),
+		"daysRemaining": int(until.Hours() / 24),
+	}
+
 	if until <= 0 {
 		result.Status = spec.StatusDown
 		result.Error = fmt.Sprintf("certificate expired %s ago", (-until).Round(time.Hour))

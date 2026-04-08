@@ -34,9 +34,10 @@ type CheckSpec struct {
 }
 
 type CheckResult struct {
-	CheckName string        `json:"check_name"`
-	Status    CheckStatus   `json:"status"`
-	Duration  time.Duration `json:"duration"`
-	Error     string        `json:"error,omitempty"`
-	Timestamp time.Time     `json:"timestamp"`
+	CheckName string         `json:"check_name"`
+	Status    CheckStatus    `json:"status"`
+	Duration  time.Duration  `json:"duration"`
+	Error     string         `json:"error,omitempty"`
+	Detail    map[string]any `json:"detail,omitempty"`
+	Timestamp time.Time      `json:"timestamp"`
 }
