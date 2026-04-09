@@ -100,19 +100,31 @@ overwatch status
 
 Overwatch doesn't manage its own service lifecycle. Use your platform's process supervisor.
 
+### Docker
+
+The published image is available on GitHub Container Registry:
+
+```bash
+docker run -d \
+  -p 3030:3030 \
+  -v ./overwatch.yaml:/overwatch.yaml \
+  ghcr.io/processfoundry/overwatch:latest \
+  serve --bind-address 0.0.0.0
+```
+
+Replace `latest` with a specific version tag (e.g. `v0.3.0`) to pin releases.
+
 ### Docker Compose
 
 ```yaml
 services:
   overwatch:
-    build:
-      context: .
-      dockerfile: packaging/docker/Dockerfile
+    image: ghcr.io/processfoundry/overwatch:latest
     ports:
       - "3030:3030"
     volumes:
       - ./overwatch.yaml:/overwatch.yaml
-    command: ["--bind-address", "0.0.0.0"]
+    command: ["serve", "--bind-address", "0.0.0.0"]
 ```
 
 ### systemd (Linux)
