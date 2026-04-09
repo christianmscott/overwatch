@@ -68,7 +68,7 @@ func runWorker(cmd *cobra.Command, _ []string) error {
 	workerID := workerInstanceID()
 	region := workerRegion
 	if region == "" {
-		region = os.Getenv("FLY_REGION")
+		region = os.Getenv("WORKER_REGION")
 	}
 	if region == "" {
 		region, _ = os.Hostname()
@@ -103,15 +103,11 @@ func runWorker(cmd *cobra.Command, _ []string) error {
 }
 
 func workerInstanceID() string {
-	// Prefer platform-injected IDs (Fly.io, ECS).
-	for _, env := range []string{"FLY_MACHINE_ID", "ECS_CONTAINER_METADATA_URI"} {
-		if v := os.Getenv(env); v != "" {
-			return v
-		}
+	if v := os.Getenv("WORKER_ID"); v != "" {
+		return v
 	}
-	h, err := os.Hostname()
-	if err != nil || h == "" {
-		return fmt.Sprintf("worker-%d", time.Now().UnixMilli())
+	if h, err := os.Hostname(); err == nil && h != "" {
+		return h
 	}
-	return h
+	return fmt.Sprintf("worker-%d", time.Now().UnixMilli())
 }

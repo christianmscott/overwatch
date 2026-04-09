@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/christianmscott/overwatch/pkg/spec"
 )
@@ -38,7 +39,7 @@ func (s *Sender) Send(ctx context.Context, msg spec.AlertMessage) error {
 			"summary":   fmt.Sprintf("%s is %s (was %s)", msg.CheckName, msg.Status, msg.PreviousStatus),
 			"source":    "overwatch",
 			"severity":  severity,
-			"timestamp": msg.Timestamp.Format("2006-01-02T15:04:05Z"),
+			"timestamp": msg.Timestamp.Format(time.RFC3339),
 			"custom_details": map[string]string{
 				"check":           msg.CheckName,
 				"status":          string(msg.Status),
