@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/pkg/spec"
 )
 
 type Router struct {

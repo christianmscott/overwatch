@@ -9,14 +9,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/christianmscott/overwatch/internal/alerts"
-	"github.com/christianmscott/overwatch/internal/api"
-	"github.com/christianmscott/overwatch/internal/config"
-	"github.com/christianmscott/overwatch/internal/results"
-	"github.com/christianmscott/overwatch/internal/scheduler"
-	"github.com/christianmscott/overwatch/internal/version"
-	"github.com/christianmscott/overwatch/internal/worker"
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/internal/alerts"
+	"github.com/processfoundry/overwatch/internal/api"
+	"github.com/processfoundry/overwatch/internal/config"
+	"github.com/processfoundry/overwatch/internal/results"
+	"github.com/processfoundry/overwatch/internal/scheduler"
+	"github.com/processfoundry/overwatch/internal/version"
+	"github.com/processfoundry/overwatch/internal/worker"
+	"github.com/processfoundry/overwatch/pkg/spec"
 	"github.com/fsnotify/fsnotify"
 )
 

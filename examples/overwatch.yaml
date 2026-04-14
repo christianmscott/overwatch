@@ -1,5 +1,5 @@
 # Overwatch configuration
-# See: https://github.com/christianmscott/overwatch
+# See: https://github.com/processfoundry/overwatch
 
 server:
   bind_address: 127.0.0.1       # address to listen on (default: 127.0.0.1)

@@ -1,6 +1,33 @@
-# Overwatch
+<p align="center">
+  <img src="assets/logo.svg" width="100" />
+</p>
 
-**Infrastructure monitoring from the command line.** Know when services, endpoints, certificates, and scheduled jobs fail—without living in a browser.
+<h1 align="center">Overwatch</h1>
+
+<p align="center">
+  <strong>Infrastructure monitoring from the command line.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/processfoundry/overwatch/releases"><img src="https://img.shields.io/github/v/release/processfoundry/overwatch?style=flat&color=23db67" alt="Latest Release"></a>
+  <a href="https://github.com/processfoundry/overwatch/actions/workflows/ci.yaml"><img src="https://img.shields.io/github/actions/workflow/status/processfoundry/overwatch/ci.yaml?style=flat&label=build" alt="Build"></a>
+  <a href="https://pkg.go.dev/github.com/processfoundry/overwatch"><img src="https://img.shields.io/github/go-mod/go-version/processfoundry/overwatch?style=flat" alt="Go Version"></a>
+  <a href="https://goreportcard.com/report/github.com/processfoundry/overwatch"><img src="https://goreportcard.com/badge/github.com/processfoundry/overwatch?style=flat" alt="Go Report Card"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/processfoundry/overwatch?style=flat" alt="License"></a>
+</p>
+
+<p align="center">
+  <a href="#install">Install</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#check-types">Check Types</a> •
+  <a href="#server-configuration-yaml">Configuration</a> •
+  <a href="#alerts">Alerts</a> •
+  <a href="#contributing">Contributing</a>
+</p>
+
+---
+
+Know when services, endpoints, certificates, and scheduled jobs fail—without living in a browser.
 
 Overwatch ships as a **single Go binary**. Run `overwatch serve` to start a self-hosted monitoring server, define checks and alerts (webhooks, email) in YAML, and manage everything from the CLI. Optionally connect to [Overwatch Cloud](https://overwatchapp.dev) for hosted monitoring with no server to run, multi-region checks, and integrations.
 

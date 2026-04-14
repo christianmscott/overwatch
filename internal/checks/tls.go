@@ -7,7 +7,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/pkg/spec"
 )
 
 const certExpiryWarning = 7 * 24 * time.Hour // 7 days

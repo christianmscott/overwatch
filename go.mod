@@ -1,4 +1,4 @@
-module github.com/christianmscott/overwatch
+module github.com/processfoundry/overwatch
 
 go 1.25.0
 

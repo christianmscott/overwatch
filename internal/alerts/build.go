@@ -1,13 +1,13 @@
 package alerts
 
 import (
-	"github.com/christianmscott/overwatch/internal/alerts/discord"
-	"github.com/christianmscott/overwatch/internal/alerts/pagerduty"
-	"github.com/christianmscott/overwatch/internal/alerts/sms"
-	"github.com/christianmscott/overwatch/internal/alerts/smtp"
-	"github.com/christianmscott/overwatch/internal/alerts/teams"
-	"github.com/christianmscott/overwatch/internal/alerts/webhook"
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/internal/alerts/discord"
+	"github.com/processfoundry/overwatch/internal/alerts/pagerduty"
+	"github.com/processfoundry/overwatch/internal/alerts/sms"
+	"github.com/processfoundry/overwatch/internal/alerts/smtp"
+	"github.com/processfoundry/overwatch/internal/alerts/teams"
+	"github.com/processfoundry/overwatch/internal/alerts/webhook"
+	"github.com/processfoundry/overwatch/pkg/spec"
 )
 
 func BuildSenders(cfg spec.AlertsConfig) []AlertSender {

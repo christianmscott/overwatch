@@ -5,9 +5,9 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/christianmscott/overwatch/internal/auth"
-	"github.com/christianmscott/overwatch/internal/config"
-	"github.com/christianmscott/overwatch/internal/runtime"
+	"github.com/processfoundry/overwatch/internal/auth"
+	"github.com/processfoundry/overwatch/internal/config"
+	"github.com/processfoundry/overwatch/internal/runtime"
 	"github.com/spf13/cobra"
 )
 

@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	"github.com/christianmscott/overwatch/internal/version"
+	"github.com/processfoundry/overwatch/internal/version"
 	"github.com/spf13/cobra"
 )
 

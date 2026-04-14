@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/pkg/spec"
 )
 
 type Sender struct {

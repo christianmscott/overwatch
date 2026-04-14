@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/pkg/spec"
 	"gopkg.in/yaml.v3"
 )
 

@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/christianmscott/overwatch/internal/auth"
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/internal/auth"
+	"github.com/processfoundry/overwatch/pkg/spec"
 	"gopkg.in/yaml.v3"
 )
 
@@ -26,7 +26,7 @@ func WriteStarterWithJoinToken(path string) error {
 }
 
 const StarterConfig = `# Overwatch configuration
-# See: https://github.com/christianmscott/overwatch
+# See: https://github.com/processfoundry/overwatch
 
 server:
   bind_address: 127.0.0.1   # local address binding

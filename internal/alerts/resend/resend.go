@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/pkg/spec"
 )
 
 var apiURL = "https://api.resend.com/emails"

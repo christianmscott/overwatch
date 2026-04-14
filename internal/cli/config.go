@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/christianmscott/overwatch/internal/config"
+	"github.com/processfoundry/overwatch/internal/config"
 	"github.com/spf13/cobra"
 )
 

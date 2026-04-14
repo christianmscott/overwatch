@@ -3,7 +3,7 @@ package results
 import (
 	"sync"
 
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/pkg/spec"
 )
 
 type Store struct {

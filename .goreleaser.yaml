@@ -14,9 +14,9 @@ builds:
       - arm64
     ldflags:
       - -s -w
-      - -X github.com/christianmscott/overwatch/internal/version.Version={{.Version}}
-      - -X github.com/christianmscott/overwatch/internal/version.Commit={{.Commit}}
-      - -X github.com/christianmscott/overwatch/internal/version.Date={{.Date}}
+      - -X github.com/processfoundry/overwatch/internal/version.Version={{.Version}}
+      - -X github.com/processfoundry/overwatch/internal/version.Commit={{.Commit}}
+      - -X github.com/processfoundry/overwatch/internal/version.Date={{.Date}}
 
 archives:
   - format: tar.gz

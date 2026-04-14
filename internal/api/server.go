@@ -12,11 +12,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/christianmscott/overwatch/internal/auth"
-	"github.com/christianmscott/overwatch/internal/checks"
-	"github.com/christianmscott/overwatch/internal/config"
-	"github.com/christianmscott/overwatch/internal/results"
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/internal/auth"
+	"github.com/processfoundry/overwatch/internal/checks"
+	"github.com/processfoundry/overwatch/internal/config"
+	"github.com/processfoundry/overwatch/internal/results"
+	"github.com/processfoundry/overwatch/pkg/spec"
 )
 
 type Server struct {

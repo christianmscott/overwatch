@@ -12,10 +12,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/spf13/cobra"
 
-	"github.com/christianmscott/overwatch/internal/scheduler"
-	"github.com/christianmscott/overwatch/internal/version"
-	"github.com/christianmscott/overwatch/internal/worker"
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/internal/scheduler"
+	"github.com/processfoundry/overwatch/internal/version"
+	"github.com/processfoundry/overwatch/internal/worker"
+	"github.com/processfoundry/overwatch/pkg/spec"
 )
 
 var workerCmd = &cobra.Command{

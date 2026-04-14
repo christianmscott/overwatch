@@ -1,6 +1,6 @@
 package main
 
-import "github.com/christianmscott/overwatch/internal/cli"
+import "github.com/processfoundry/overwatch/internal/cli"
 
 func main() {
 	cli.Execute()

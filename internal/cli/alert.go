@@ -9,8 +9,8 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/christianmscott/overwatch/internal/alerts"
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/internal/alerts"
+	"github.com/processfoundry/overwatch/pkg/spec"
 	"github.com/spf13/cobra"
 )
 

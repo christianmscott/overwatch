@@ -7,7 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/christianmscott/overwatch/internal/version"
+	"github.com/processfoundry/overwatch/internal/version"
 )
 
 const heartbeatInterval = 15 * time.Second

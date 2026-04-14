@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/christianmscott/overwatch/pkg/spec"
+	"github.com/processfoundry/overwatch/pkg/spec"
 )
 
 func TestRunUnknownType(t *testing.T) {
