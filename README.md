@@ -5,14 +5,14 @@
 <h1 align="center">Overwatch</h1>
 
 <p align="center">
-  <strong>Infrastructure monitoring from the command line.</strong>
+  <strong>Site, service, and schedule monitoring for builders.</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/processfoundry/overwatch/releases"><img src="https://img.shields.io/github/v/release/processfoundry/overwatch?style=flat&color=23db67" alt="Latest Release"></a>
   <a href="https://github.com/processfoundry/overwatch/actions/workflows/ci.yaml"><img src="https://img.shields.io/github/actions/workflow/status/processfoundry/overwatch/ci.yaml?style=flat&label=build" alt="Build"></a>
   <a href="https://pkg.go.dev/github.com/processfoundry/overwatch"><img src="https://img.shields.io/github/go-mod/go-version/processfoundry/overwatch?style=flat" alt="Go Version"></a>
-  <a href="https://goreportcard.com/report/github.com/processfoundry/overwatch"><img src="https://goreportcard.com/badge/github.com/processfoundry/overwatch?style=flat" alt="Go Report Card"></a>
+  <a href="https://goreportcard.com/report/github.com/processfoundry/overwatch"><img src="https://img.shields.io/badge/go%20report-A+-brightgreen?style=flat" alt="Go Report Card"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/processfoundry/overwatch?style=flat" alt="License"></a>
 </p>
 
@@ -27,17 +27,15 @@
 
 ---
 
-Know when services, endpoints, certificates, and scheduled jobs fail—without living in a browser.
+Monitor websites, APIs, cron jobs, and services with interval checks. Get alerted when something goes wrong.
 
-Overwatch ships as a **single Go binary**. Run `overwatch serve` to start a self-hosted monitoring server, define checks and alerts (webhooks, email) in YAML, and manage everything from the CLI. Optionally connect to [Overwatch Cloud](https://overwatchapp.dev) for hosted monitoring with no server to run, multi-region checks, and integrations.
+Overwatch ships as a **single Go binary**. Run `overwatch serve` to start a self-hosted monitoring server, define checks and alerts (webhooks, email) in YAML, and manage everything from the CLI.
 
 ## How it works
 
 **Self-hosted** — `overwatch serve` runs the monitoring server. Checks and alerts are defined in a YAML config file (the source of truth). The server executes checks on a schedule, sends alerts on state changes, and exposes an API that the CLI talks to. Edit the YAML directly and send SIGHUP (osr `POST /api/reload`) to reload, or use the CLI to add/remove/update checks and alerts (changes are persisted back to YAML).
 
 **Client** — The CLI stores connection state (server address, Ed25519 keypair) under `~/.overwatch/`. Multiple machines can manage the same server; each joins with a token and gets its own keypair.
-
-**Overwatch Cloud** — Same CLI, no server to run. The CLI talks to the hosted backend instead. The `overwatch init` flow handles setup for either mode.
 
 ---
 
